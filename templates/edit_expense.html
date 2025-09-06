@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}แก้ไขรายการค่าใช้จ่าย - ระบบบันทึกค่าใช้จ่าย{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>แก้ไขรายการค่าใช้จ่าย
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="editExpenseForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">
+                                    <i class="fas fa-calendar me-2"></i>วันที่
+                                </label>
+                                <input type="date" class="form-control" id="date" name="date" 
+                                       value="{{ expense.date.strftime('%Y-%m-%d') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">
+                                    <i class="fas fa-money-bill me-2"></i>จำนวนเงิน (บาท)
+                                </label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" value="{{ expense.amount }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">
+                            <i class="fas fa-tags me-2"></i>หมวดหมู่
+                        </label>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="">-- เลือกหมวดหมู่ --</option>
+                            <option value="อาหาร" {{ 'selected' if expense.category == 'อาหาร' }}>🍽️ อาหาร</option>
+                            <option value="เครื่องดื่ม" {{ 'selected' if expense.category == 'เครื่องดื่ม' }}>🥤 เครื่องดื่ม</option>
+                            <option value="ค่าเดินทาง" {{ 'selected' if expense.category == 'ค่าเดินทาง' }}>🚗 ค่าเดินทาง</option>
+                            <option value="ค่าน้ำมัน" {{ 'selected' if expense.category == 'ค่าน้ำมัน' }}>⛽ ค่าน้ำมัน</option>
+                            <option value="ช้อปปิ้ง" {{ 'selected' if expense.category == 'ช้อปปิ้ง' }}>🛍️ ช้อปปิ้ง</option>
+                            <option value="เสื้อผ้า" {{ 'selected' if expense.category == 'เสื้อผ้า' }}>👕 เสื้อผ้า</option>
+                            <option value="ความบันเทิง" {{ 'selected' if expense.category == 'ความบันเทิง' }}>🎬 ความบันเทิง</option>
+                            <option value="สุขภาพ" {{ 'selected' if expense.category == 'สุขภาพ' }}>🏥 สุขภาพ</option>
+                            <option value="การศึกษา" {{ 'selected' if expense.category == 'การศึกษา' }}>📚 การศึกษา</option>
+                            <option value="ค่าบ้าน" {{ 'selected' if expense.category == 'ค่าบ้าน' }}>🏠 ค่าบ้าน</option>
+                            <option value="ค่าไฟฟ้า" {{ 'selected' if expense.category == 'ค่าไฟฟ้า' }}>💡 ค่าไฟฟ้า</option>
+                            <option value="ค่าน้ำ" {{ 'selected' if expense.category == 'ค่าน้ำ' }}>💧 ค่าน้ำ</option>
+                            <option value="ค่าอินเทอร์เน็ต" {{ 'selected' if expense.category == 'ค่าอินเทอร์เน็ต' }}>📶 ค่าอินเทอร์เน็ต</option>
+                            <option value="ค่าโทรศัพท์" {{ 'selected' if expense.category == 'ค่าโทรศัพท์' }}>📱 ค่าโทรศัพท์</option>
+                            <option value="ประกันภัย" {{ 'selected' if expense.category == 'ประกันภัย' }}>🛡️ ประกันภัย</option>
+                            <option value="เงินออม" {{ 'selected' if expense.category == 'เงินออม' }}>💰 เงินออม</option>
+                            <option value="อื่นๆ" {{ 'selected' if expense.category == 'อื่นๆ' }}>📝 อื่นๆ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-comment me-2"></i>รายละเอียด
+                        </label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3" placeholder="ระบุรายละเอียดค่าใช้จ่าย..." required>{{ expense.description }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-danger me-md-2">
+                            <i class="fas fa-times me-2"></i>ยกเลิก
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>บันทึกการแก้ไข
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- รายละเอียดเดิม -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>ข้อมูลเดิม
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>วันที่:</strong><br>
+                        <span class="text-muted">{{ expense.date.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>หมวดหมู่:</strong><br>
+                        <span class="badge bg-secondary">{{ expense.category }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>จำนวนเงิน:</strong><br>
+                        <span class="text-danger">฿{{ "{:,.2f}".format(expense.amount) }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>สร้างเมื่อ:</strong><br>
+                        <span class="text-muted">{{ expense.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <strong>รายละเอียด:</strong><br>
+                        <span class="text-muted">{{ expense.description }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ปุ่มลบ -->
+        <div class="card mt-4 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>ลบรายการ
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">หากคุณต้องการลบรายการนี้ กรุณาคลิกปุ่มด้านล่าง การดำเนินการนี้ไม่สามารถยกเลิกได้</p>
+                <a href="{{ url_for('delete_expense', id=expense.id) }}" 
+                   class="btn btn-danger" 
+                   onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบรายการนี้? การดำเนินการนี้ไม่สามารถยกเลิกได้')">
+                    <i class="fas fa-trash me-2"></i>ลบรายการนี้
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Form validation
+    document.getElementById('editExpenseForm').addEventListener('submit', function(e) {
+        const amount = parseFloat(document.getElementById('amount').value);
+        const category = document.getElementById('category').value;
+        const description = document.getElementById('description').value.trim();
+        
+        if (amount <= 0) {
+            e.preventDefault();
+            alert('กรุณาระบุจำนวนเงินที่มากกว่า 0');
+            return;
+        }
+        
+        if (!category) {
+            e.preventDefault();
+            alert('กรุณาเลือกหมวดหมู่');
+            return;
+        }
+        
+        if (!description) {
+            e.preventDefault();
+            alert('กรุณาระบุรายละเอียด');
+            return;
+        }
+        
+        // Confirm changes
+        if (!confirm('คุณแน่ใจหรือไม่ที่จะบันทึกการแก้ไข?')) {
+            e.preventDefault();
+        }
+    });
+    
+    // Format amount input
+    document.getElementById('amount').addEventListener('input', function() {
+        let value = this.value;
+        if (value && !isNaN(value)) {
+            this.value = parseFloat(value).toFixed(2);
+        }
+    });
+    
+    // Highlight changes
+    const originalData = {
+        date: '{{ expense.date.strftime("%Y-%m-%d") }}',
+        category: '{{ expense.category }}',
+        description: '{{ expense.description }}',
+        amount: '{{ expense.amount }}'
+    };
+    
+    function checkChanges() {
+        const currentData = {
+            date: document.getElementById('date').value,
+            category: document.getElementById('category').value,
+            description: document.getElementById('description').value,
+            amount: document.getElementById('amount').value
+        };
+        
+        let hasChanges = false;
+        for (let key in originalData) {
+            if (originalData[key] != currentData[key]) {
+                hasChanges = true;
+                break;
+            }
+        }
+        
+        const submitBtn = document.querySelector('button[type="submit"]');
+        if (hasChanges) {
+            submitBtn.classList.remove('btn-warning');
+            submitBtn.classList.add('btn-success');
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>บันทึกการเปลี่ยนแปลง';
+        } else {
+            submitBtn.classList.remove('btn-success');
+            submitBtn.classList.add('btn-warning');
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>บันทึกการแก้ไข';
+        }
+    }
+    
+    // Add event listeners to check for changes
+    document.getElementById('date').addEventListener('change', checkChanges);
+    document.getElementById('category').addEventListener('change', checkChanges);
+    document.getElementById('description').addEventListener('input', checkChanges);
+    document.getElementById('amount').addEventListener('input', checkChanges);
+</script>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}เพิ่มรายการค่าใช้จ่าย - ระบบบันทึกค่าใช้จ่าย{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>เพิ่มรายการค่าใช้จ่ายใหม่
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="expenseForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">
+                                    <i class="fas fa-calendar me-2"></i>วันที่
+                                </label>
+                                <input type="date" class="form-control" id="date" name="date" 
+                                       value="{{ date.today() }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">
+                                    <i class="fas fa-money-bill me-2"></i>จำนวนเงิน (บาท)
+                                </label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">
+                            <i class="fas fa-tags me-2"></i>หมวดหมู่
+                        </label>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="">-- เลือกหมวดหมู่ --</option>
+                            <option value="อาหาร">🍽️ อาหาร</option>
+                            <option value="เครื่องดื่ม">🥤 เครื่องดื่ม</option>
+                            <option value="ค่าเดินทาง">🚗 ค่าเดินทาง</option>
+                            <option value="ค่าน้ำมัน">⛽ ค่าน้ำมัน</option>
+                            <option value="ช้อปปิ้ง">🛍️ ช้อปปิ้ง</option>
+                            <option value="เสื้อผ้า">👕 เสื้อผ้า</option>
+                            <option value="ความบันเทิง">🎬 ความบันเทิง</option>
+                            <option value="สุขภาพ">🏥 สุขภาพ</option>
+                            <option value="การศึกษา">📚 การศึกษา</option>
+                            <option value="ค่าบ้าน">🏠 ค่าบ้าน</option>
+                            <option value="ค่าไฟฟ้า">💡 ค่าไฟฟ้า</option>
+                            <option value="ค่าน้ำ">💧 ค่าน้ำ</option>
+                            <option value="ค่าอินเทอร์เน็ต">📶 ค่าอินเทอร์เน็ต</option>
+                            <option value="ค่าโทรศัพท์">📱 ค่าโทรศัพท์</option>
+                            <option value="ประกันภัย">🛡️ ประกันภัย</option>
+                            <option value="เงินออม">💰 เงินออม</option>
+                            <option value="อื่นๆ">📝 อื่นๆ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-comment me-2"></i>รายละเอียด
+                        </label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3" placeholder="ระบุรายละเอียดค่าใช้จ่าย..." required></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-danger me-md-2">
+                            <i class="fas fa-times me-2"></i>ยกเลิก
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>บันทึก
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Quick Add Buttons -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-zap me-2"></i>เพิ่มรายการด่วน
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-add" 
+                                data-category="อาหาร" data-description="อาหารเช้า">
+                            🍽️ อาหารเช้า
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-add" 
+                                data-category="อาหาร" data-description="อาหารกลางวัน">
+                            🍽️ อาหารกลางวัน
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-add" 
+                                data-category="อาหาร" data-description="อาหารเย็น">
+                            🍽️ อาหารเย็น
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-add" 
+                                data-category="เครื่องดื่ม" data-description="กาแฟ">
+                            ☕ กาแฟ
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-success w-100 quick-add" 
+                                data-category="ค่าเดินทาง" data-description="ค่าแท็กซี่">
+                            🚗 แท็กซี่
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-success w-100 quick-add" 
+                                data-category="ค่าเดินทาง" data-description="ค่ารถไฟฟ้า">
+                            🚇 รถไฟฟ้า
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-warning w-100 quick-add" 
+                                data-category="ค่าน้ำมัน" data-description="เติมน้ำมัน">
+                            ⛽ เติมน้ำมัน
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-outline-info w-100 quick-add" 
+                                data-category="ช้อปปิ้ง" data-description="ของใช้ประจำวัน">
+                            🛍️ ของใช้
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set today's date as default
+    document.getElementById('date').valueAsDate = new Date();
+    
+    // Quick add functionality
+    document.querySelectorAll('.quick-add').forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.dataset.category;
+            const description = this.dataset.description;
+            
+            document.getElementById('category').value = category;
+            document.getElementById('description').value = description;
+            document.getElementById('amount').focus();
+        });
+    });
+    
+    // Form validation
+    document.getElementById('expenseForm').addEventListener('submit', function(e) {
+        const amount = parseFloat(document.getElementById('amount').value);
+        const category = document.getElementById('category').value;
+        const description = document.getElementById('description').value.trim();
+        
+        if (amount <= 0) {
+            e.preventDefault();
+            alert('กรุณาระบุจำนวนเงินที่มากกว่า 0');
+            return;
+        }
+        
+        if (!category) {
+            e.preventDefault();
+            alert('กรุณาเลือกหมวดหมู่');
+            return;
+        }
+        
+        if (!description) {
+            e.preventDefault();
+            alert('กรุณาระบุรายละเอียด');
+            return;
+        }
+    });
+    
+    // Format amount input
+    document.getElementById('amount').addEventListener('input', function() {
+        let value = this.value;
+        if (value && !isNaN(value)) {
+            this.value = parseFloat(value).toFixed(2);
+        }
+    });
+</script>
+{% endblock %}

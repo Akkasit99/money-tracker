@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}หน้าหลัก - ระบบบันทึกค่าใช้จ่าย{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- สถิติรวม -->
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h5 class="mb-1">ค่าใช้จ่ายเดือนนี้</h5>
+                    <h2 class="mb-0">฿{{ "{:,.2f}".format(monthly_total) }}</h2>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-calendar-alt fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-plus-circle fa-3x text-success mb-3"></i>
+                <h5 class="card-title">เพิ่มรายการใหม่</h5>
+                <p class="card-text">บันทึกค่าใช้จ่ายรายการใหม่</p>
+                <a href="{{ url_for('add_expense') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>เพิ่มรายการ
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">ดูรายงาน</h5>
+                <p class="card-text">สถิติและรายงานค่าใช้จ่าย</p>
+                <a href="{{ url_for('reports') }}" class="btn btn-primary">
+                    <i class="fas fa-chart-bar me-2"></i>ดูรายงาน
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- รายการค่าใช้จ่ายล่าสุด -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>รายการค่าใช้จ่ายล่าสุด
+                </h5>
+                <small class="text-muted">แสดง 10 รายการล่าสุด</small>
+            </div>
+            <div class="card-body">
+                {% if expenses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมวดหมู่</th>
+                                    <th>รายละเอียด</th>
+                                    <th class="text-end">จำนวนเงิน</th>
+                                    <th class="text-center">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-calendar me-2 text-muted"></i>
+                                        {{ expense.date.strftime('%d/%m/%Y') }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ expense.category }}</span>
+                                    </td>
+                                    <td>{{ expense.description }}</td>
+                                    <td class="text-end">
+                                        <strong class="text-danger">฿{{ "{:,.2f}".format(expense.amount) }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('edit_expense', id=expense.id) }}" 
+                                               class="btn btn-sm btn-warning" title="แก้ไข">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ url_for('delete_expense', id=expense.id) }}" 
+                                               class="btn btn-sm btn-danger" 
+                                               onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบรายการนี้?')" 
+                                               title="ลบ">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">ยังไม่มีรายการค่าใช้จ่าย</h5>
+                        <p class="text-muted">เริ่มต้นบันทึกค่าใช้จ่ายของคุณวันนี้</p>
+                        <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>เพิ่มรายการแรก
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+{% if expenses %}
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>ข้อมูลสรุป
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ expenses|length }}</h4>
+                        <small class="text-muted">รายการล่าสุด</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success">฿{{ "{:,.2f}".format(monthly_total) }}</h4>
+                        <small class="text-muted">รวมเดือนนี้</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>เคล็ดลับ
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><i class="fas fa-check text-success me-2"></i>บันทึกค่าใช้จ่ายทุกวัน</p>
+                <p class="mb-2"><i class="fas fa-check text-success me-2"></i>จัดหมวดหมู่ให้ชัดเจน</p>
+                <p class="mb-0"><i class="fas fa-check text-success me-2"></i>ตรวจสอบรายงานเป็นประจำ</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+{% endblock %}
