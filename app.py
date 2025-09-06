@@ -6,7 +6,15 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///expenses.db'
+
+# ตรวจสอบว่าอยู่บน Vercel หรือไม่
+if os.environ.get('VERCEL_ENV'):
+    # ใช้ in-memory database บน Vercel
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+else:
+    # ใช้ file database ใน local
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///expenses.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -26,6 +34,34 @@ class Expense(db.Model):
 # สร้างตารางฐานข้อมูล
 with app.app_context():
     db.create_all()
+    
+    # เพิ่มข้อมูลตัวอย่างสำหรับ Vercel
+    if os.environ.get('VERCEL_ENV') and not Expense.query.first():
+        sample_expenses = [
+            Expense(
+                date=date.today(),
+                category='อาหาร',
+                description='อาหารเช้า - ข้าวผัด',
+                amount=45.0
+            ),
+            Expense(
+                date=date.today(),
+                category='เครื่องดื่ม',
+                description='กาแฟ - คาปูชิโน่',
+                amount=65.0
+            ),
+            Expense(
+                date=date.today(),
+                category='ค่าเดินทาง',
+                description='ค่าแท็กซี่',
+                amount=120.0
+            )
+        ]
+        
+        for expense in sample_expenses:
+            db.session.add(expense)
+        
+        db.session.commit()
 
 @app.route('/')
 def index():
